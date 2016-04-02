@@ -85,8 +85,9 @@ bot.on('chat', (data) => {
       /*
       If you want it to use a private message us this instead
       bot.sendPrivateMessage(data.user.uid, "I can't help you " + data.user.un + ". But I can give you some Info about the room: There are currently " + (Object.keys(bot.users).length + 1) + ' Users connected and there are ' + data2.queue + ' users in the Queue');
-      // data.user.uid is the id of the user, you need it when doing a private message
-      sendPrivateMessage(data.user.uid, message)
+      
+      //data.user.uid is the id of the user, you need it when doing a private message
+      //sendPrivateMessage(data.user.uid, message)
       */
     });
   }
