@@ -46,7 +46,7 @@ bot.connect()
   });
 ```
 
-Now we create an Event-listener for chat messages [more infos](). To do that, you can also .once if you want the function to be only called once.
+Now we create an Event-listener for chat messages. To do that, you can also .once if you want the function to be only called once.
 
 ```js
 bot.on('chat', function(msg) {
