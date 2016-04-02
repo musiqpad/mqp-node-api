@@ -21,8 +21,8 @@ const mqpBot = require('mqp-api');
 
 var bot = new mqpBot({
   useSSL: true,
-  socketDomain: 'ws.explodingcamera.com',
-  socketPort: 7001,
+  socketDomain: 'myServerHost.tld',
+  socketPort: 1234,
 });
 ```
 
@@ -31,9 +31,10 @@ Now we connect to the Websockets Server and login
 ```js
 bot.connect()
   .then(function() {
+    //This needs to be returned because the function itself retuns a Promise!
     return bot.login({
-      email: 'mail@explodingcamera.com',
-      password: 'MyPassword',
+      email: 'mail@domain.tld',
+      password: 'MyPassword', //Instead Of mail and pw, you can also use a token
     });
   })
   .then(function() {
@@ -41,21 +42,23 @@ bot.connect()
     // Do what ever you want to happen after you successfully logged in
     // ...
   })
+  //Catch errors, you can do that after every .then
+  //If you don't do that, errors get logged to the console.
   .catch(function(e) {
     console.log('ERROR: ' + JSON.stringify(e));
   });
 ```
 
-Now we create an Event-listener for chat messages. To do that, you can also .once if you want the function to be only called once.
+Now we create an Event-listener for chat messages. To do that, you can also .once . if you want the function to be only called once.
 
 ```js
-bot.on('chat', function(msg) {
-  if (msg.msg.indexOf('@mybot') != -1)
-    bot.sendMessage('Hey, ' + msg.user.un + '!');
+bot.on('chat', function(data) {
+  if (data.msg.indexOf('@bot') != -1)
+    bot.sendMessage('Hey, ' + data.user.un + '!');
 
-  if (msg.msg.indexOf('!kill') != -1) {
-    var user = msg.msg.replace('!kill', '');
-    bot.sendMessage(user + 'got killed by '+msg.user.un + "! Oh no!");
+  if (data.msg.indexOf('!kill') != -1) {
+    var user = data.msg.replace('!kill ', '');
+    bot.sendMessage(user + 'got killed by '+ data.user.un + "! Oh no!");
   }
 });
 ```
@@ -63,27 +66,36 @@ bot.on('chat', function(msg) {
 Some other Examples:
 
 ```js
-MyBot.on('chat', (msg) => {
-  if (msg.msg.indexOf('@explodingbot') != -1)
-    MyBot.sendPrivateMessage(msg.user.uid, 'Hey, ' + msg.user.un + '! To check all of my commands, type "!help".');
-  if (msg.msg.indexOf('!help') != -1) {
-    MyBot.getRoomInfo().then(function (data) {
-      MyBot.sendMessage("I can't help you. But I can give you some Infos about the room: There are currently " +
-      (Object.keys(MyBot.users).length + 1) + ' Users connected and there are ' + data.queue + ' people in the Queue');
+// Add an event Listener for Chatevents
+bot.on('chat', (data) => {
+  //If the message contains @YourBot
+  if (data.msg.indexOf('@YourBot') != -1)
+    //Send a
+    bot.sendPrivateMessage(data.user.uid, 'Hey, ' + data.user.un + '! To check all of my commands, type "!help".');
+
+
+  // IF the message (data.msg) includes !help
+  if (data.msg.indexOf('!help') != -1) {
+    //Get the Room Infos
+    bot.getRoomInfo().then(function (data2) {
+      //And .then() use those (data2) to send a Message
+      bot.sendMessage("I can't help you. But I can give you some Infos about the room: There are currently " +
+      // (Object.keys(bot.users).length + 1) get the number of online users (Works everywhere)
+      (Object.keys(bot.users).length + 1) + ' Users connected and there are ' + data2.queue + ' people in the Queue');
     });
   }
 });
 
-MyBot.on('userJoined', function (data) {
+bot.on('userJoined', function (data) {
   if (data.user)
     setTimeout(function () {
-      MyBot.sendMessage('Welcome to PadPlus, @' + data.user.un + ' !');
+      bot.sendMessage('Welcome to PadPlus, @' + data.user.un + ' !');
     }, 5000);
 });
 
-MyBot.on('privateMessage', function (data) {
+bot.on('privateMessage', function (data) {
   if (data.message.indexOf('help') != -1)
-    MyBot.sendPrivateMessage(data.uid, 'Hey, ' + MyBot.users[data.uid].un + '! To check all of my commands, type "!help".');
+    bot.sendPrivateMessage(data.uid, 'Hey, ' + bot.users[data.uid].un + '! To check all of my commands, type "!help".');
 });
 ```
 
@@ -94,7 +106,7 @@ The API also contains a lot of useful functions:
 getUsers():
 
 ```js
-myBot.getUsers()
+bot.getUsers()
 ```
 
 ```js
@@ -114,7 +126,7 @@ myBot.getUsers()
 getUser():
 
 ```js
-myBot.getUser(uid)
+bot.getUser(uid)
 ```
 
 ```js
@@ -132,7 +144,7 @@ myBot.getUser(uid)
 sendJSON():
 
 ```js
-myBot.sendJSON({type: 'getUsers'})
+bot.sendJSON({type: 'getUsers'})
 ```
 
 ```js
@@ -148,7 +160,7 @@ myBot.sendJSON({type: 'getUsers'})
 getRoomInfo():
 
 ```js
-myBot.getRoomInfo()
+bot.getRoomInfo()
 ```
 
 ```js
@@ -169,11 +181,11 @@ myBot.getRoomInfo()
 sendPrivateMessage():
 
 ```js
-myBot.sendPrivateMessage(uid, msg)
+bot.sendPrivateMessage(uid, msg)
 ```
 
 ```js
-myBot.sendPrivateMessage(7, "Hey, what's up?")
+bot.sendPrivateMessage(7, "Hey, what's up?")
 .then(function (data) {
  console.log('Private Message send!');
 })
@@ -184,11 +196,11 @@ myBot.sendPrivateMessage(7, "Hey, what's up?")
 joinQueue(): //leaveQueue, lockQueue, cycle and skip are the same.
 
 ```js
-myBot.joinQueue()
+bot.joinQueue()
 ```
 
 ```js
-myBot.joinQueue()
+bot.joinQueue()
 .then(function (data) {
  console.log('Joined the DJ Queue!');
 })
@@ -199,11 +211,11 @@ myBot.joinQueue()
 deleteChat():
 
 ```js
-myBot.deleteChat()
+bot.deleteChat()
 ```
 
 ```js
-myBot.deleteChat(uid, cid)
+bot.deleteChat(uid, cid)
 .then(function (data) {
  console.log('Deleted Chat Message!');
 })
@@ -214,7 +226,7 @@ myBot.deleteChat(uid, cid)
 whois():
 
 ```js
-myBot.whois(uid, un)
+bot.whois(uid, un)
 ```
 
 --------------------------------------------------------------------------------
@@ -222,8 +234,8 @@ myBot.whois(uid, un)
 unban() / ban():
 
 ```js
-myBot.ban(uid, duration, reason);
-myBot.ban(uid);
+bot.ban(uid, duration, reason);
+bot.ban(uid);
 ```
 
 --------------------------------------------------------------------------------
