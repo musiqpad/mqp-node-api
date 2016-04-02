@@ -49,7 +49,7 @@ bot.connect()
   });
 ```
 
-Now we create an Event-listener for chat messages. To do that, you can also .once . if you want the function to be only called once.
+Now we create an Event-listener for chat messages. To do that, you can also use .once if you want the function to be only called once.
 
 ```js
 bot.on('chat', function(data) {
@@ -80,7 +80,7 @@ bot.on('chat', (data) => {
     bot.getRoomInfo().then(function (data2) {
       //And .then() use those (data2) to send a Message
       bot.sendMessage("I can't help you. But I can give you some Infos about the room: There are currently " +
-      // (Object.keys(bot.users).length + 1) get the number of online users (Works everywhere)
+      // (Object.keys(bot.users).length + 1) gets the number of online users (Works everywhere)
       (Object.keys(bot.users).length + 1) + ' Users connected and there are ' + data2.queue + ' people in the Queue');
     });
   }
@@ -148,7 +148,7 @@ bot.sendJSON({type: 'getUsers'})
 ```
 
 ```js
-    events.once('gotUsers', (data) => {
+    events.once('getUsersReceived', (data) => { //You can add Received to every event to get the Server Response
       if (data.error)
         reject(data.error);
       resolve();
