@@ -385,6 +385,8 @@ app.prototype.handleResponse = function (e) {
       events.emit(API.DATA.EVENTS.CHAT, {
         time: message.time,
         msg: message.message,
+        message: message.message,
+        cid: message.cid,
         uid: message.uid,
         user: _this.getUser(message.uid),
       });
