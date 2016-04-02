@@ -223,7 +223,7 @@ bot.deleteChat()
 ```
 
 ```js
-bot.deleteChat(uid, cid)
+bot.deleteChat(cid, uid)
 .then(function (data) {
  console.log('Deleted Chat Message!');
 })
