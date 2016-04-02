@@ -58,7 +58,7 @@ bot.on('chat', function(data) {
 
   if (data.msg.indexOf('!kill') != -1) {
     var user = data.msg.replace('!kill ', '');
-    bot.sendMessage(user + 'got killed by '+ data.user.un + "! Oh no!");
+    bot.sendMessage(user + ' got killed by '+ data.user.un + "! Oh no!");
   }
 });
 ```
