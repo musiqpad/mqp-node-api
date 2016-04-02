@@ -74,13 +74,16 @@ MyBot.on('chat', (msg) => {
   }
 });
 
-MyBot.on('userJoined', (user) => {
-  MyBot.sendMessage('Welcome to PadPlus, ' + user.un + '!');
+MyBot.on('userJoined', function (data) {
+  if (data.user)
+    setTimeout(function () {
+      MyBot.sendMessage('Welcome to PadPlus, @' + data.user.un + ' !');
+    }, 5000);
 });
 
-MyBot.on('privateMessage', (msg) => {
-  if (msg.msg.indexOf('help') != -1)
-    MyBot.sendPrivateMessage(msg.user.uid, 'Hey, ' + msg.user.un + '! To check all of my commands, type "!help".');
+MyBot.on('privateMessage', function (data) {
+  if (data.message.indexOf('help') != -1)
+    MyBot.sendPrivateMessage(data.uid, 'Hey, ' + MyBot.users[data.uid].un + '! To check all of my commands, type "!help".');
 });
 ```
 
