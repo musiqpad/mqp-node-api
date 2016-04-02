@@ -269,6 +269,7 @@ Avalible Events:
     time: 'a timestamp',
     msg: "HEEY",
     uid: 12,
+    cid: 420,
     user: { Same as getUser() },
 
     }
