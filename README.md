@@ -1,6 +1,6 @@
 # MQP-API
 
-**API for creating MusiqPad bots**
+**API for creating musiqpad bots**
 
 # Install
 
