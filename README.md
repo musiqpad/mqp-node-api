@@ -12,7 +12,7 @@ npm install mqp-api -S
 
 # Set-up your own bot
 
-Tip: Change your bot permissions in serversettings.js to have the same as a co-owner if you want to avoid permissions errors.
+Tip: Change your bot permissions in serverconfig.js to have the same as a co-owner if you want to avoid permissions errors.
 
 The first thing you'll need to do is to create a new Bot. You can get these values by typing `config` into the DevTools console on your Pad (if the serverhost is empty, just use your domain).
 
