@@ -10,9 +10,9 @@
 npm install mqp-api -S
 ```
 
-# Example
+# Set-up your own bot
 
-PLEASE SET THE BOT PERMISSIONS TO AT LEAST THE COOWNER PERMISSIONS IF YOU GET PERMISSION ERRORS!
+Tip: Change your bot permissions in serverconfig.js to have the same as a co-owner if you want to avoid permissions errors.
 
 The first thing you'll need to do is to create a new Bot. You can get these values by typing `config` into the DevTools console on your Pad (if the serverhost is empty, just use your domain).
 
@@ -58,12 +58,12 @@ bot.on('chat', function(data) {
 
   if (data.msg.indexOf('!kill') != -1) {
     var user = data.msg.replace('!kill ', '');
-    bot.sendMessage(user + 'got killed by '+ data.user.un + "! Oh no!");
+    bot.sendMessage(user + ' got killed by '+ data.user.un + "! Oh no!");
   }
 });
 ```
 
-Some other Examples:
+## Some examples:
 
 ```js
 // Add an event Listener for Chatevents
@@ -81,7 +81,14 @@ bot.on('chat', (data) => {
       //And .then() use those (data2) to send a Message
       bot.sendMessage("I can't help you. But I can give you some Infos about the room: There are currently " +
       // (Object.keys(bot.users).length + 1) gets the number of online users (Works everywhere)
-      (Object.keys(bot.users).length + 1) + ' Users connected and there are ' + data2.queue + ' people in the Queue');
+      (Object.keys(bot.users).length + 1) + ' Users connected and ' + data2.queue + ' users in the Queue');
+      /*
+      If you want it to use a private message us this instead
+      bot.sendPrivateMessage(data.user.uid, "I can't help you " + data.user.un + ". But I can give you some Info about the room: There are currently " + (Object.keys(bot.users).length + 1) + ' Users connected and there are ' + data2.queue + ' users in the Queue');
+      
+      //data.user.uid is the id of the user, you need it when doing a private message
+      //sendPrivateMessage(data.user.uid, message)
+      */
     });
   }
 });
@@ -89,7 +96,7 @@ bot.on('chat', (data) => {
 bot.on('userJoined', function (data) {
   if (data.user)
     setTimeout(function () {
-      bot.sendMessage('Welcome to PadPlus, @' + data.user.un + ' !');
+      bot.sendMessage('Welcome to Pad_Name, @' + data.user.un + ' !');
     }, 5000);
 });
 
@@ -98,6 +105,7 @@ bot.on('privateMessage', function (data) {
     bot.sendPrivateMessage(data.uid, 'Hey, ' + bot.users[data.uid].un + '! To check all of my commands, type "!help".');
 });
 ```
+## API
 
 The API also contains a lot of useful functions:
 
@@ -215,7 +223,7 @@ bot.deleteChat()
 ```
 
 ```js
-bot.deleteChat(uid, cid)
+bot.deleteChat(cid, uid)
 .then(function (data) {
  console.log('Deleted Chat Message!');
 })
@@ -261,6 +269,7 @@ Avalible Events:
     time: 'a timestamp',
     msg: "HEEY",
     uid: 12,
+    cid: 420,
     user: { Same as getUser() },
 
     }
