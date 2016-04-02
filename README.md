@@ -237,8 +237,6 @@ move(uid, position)
 
 Avalible Events:
 
-- login
-- gotUsers
 - rawSocket
 - chat
 
