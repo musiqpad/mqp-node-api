@@ -21,8 +21,8 @@ const mqpBot = require('mqp-api');
 
 var bot = new mqpBot({
   useSSL: true,
-  socketDomain: 'myServerHost.tld',
-  socketPort: 1234,
+  socketDomain: 'domain.tld',
+  socketPort: 8082,
 });
 ```
 
