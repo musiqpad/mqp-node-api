@@ -350,6 +350,10 @@ app.prototype.getUser = function (uid) {
   return this.users[uid];
 };
 
+app.prototype.getUsers = function () {
+  return this.users;
+};
+
 app.prototype.on = function (type, value) {
   return events.on(type, value);
 };
