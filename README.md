@@ -1,6 +1,6 @@
 # MQP-API
 
-**API for creating musiqpad bots**
+API for creating musiqpad bots
 
 # Install
 
@@ -56,7 +56,7 @@ bot.on('chat', function(data) {
   if (data.msg.indexOf('@bot') != -1)
     bot.sendMessage('Hey, ' + data.user.un + '!');
 
-  if (data.msg.indexOf('!kill') != -1) {
+  if (data.msg.indexOf('!kill ') != -1) {
     var user = data.msg.replace('!kill ', '');
     bot.sendMessage(user + ' got killed by '+ data.user.un + "! Oh no!");
   }
@@ -82,13 +82,6 @@ bot.on('chat', (data) => {
       bot.sendMessage("I can't help you. But I can give you some Infos about the room: There are currently " +
       // (Object.keys(bot.users).length + 1) gets the number of online users (Works everywhere)
       (Object.keys(bot.users).length + 1) + ' Users connected and ' + data2.queue + ' users in the Queue');
-      /*
-      If you want it to use a private message us this instead
-      bot.sendPrivateMessage(data.user.uid, "I can't help you " + data.user.un + ". But I can give you some Info about the room: There are currently " + (Object.keys(bot.users).length + 1) + ' Users connected and there are ' + data2.queue + ' users in the Queue');
-      
-      //data.user.uid is the id of the user, you need it when doing a private message
-      //sendPrivateMessage(data.user.uid, message)
-      */
     });
   }
 });
@@ -105,6 +98,7 @@ bot.on('privateMessage', function (data) {
     bot.sendPrivateMessage(data.uid, 'Hey, ' + bot.users[data.uid].un + '! To check all of my commands, type "!help".');
 });
 ```
+
 ## API
 
 The API also contains a lot of useful functions:
@@ -178,7 +172,7 @@ bot.getRoomInfo()
     greet: greet,
     bg: bg,
     people: userCount,
-    queue: queue,
+    queue: queueLength,
     media: currentsong,
     staffroles: staffroles
 }
@@ -251,11 +245,17 @@ bot.ban(uid);
 There are also:
 
 ```js
-setLimit(limit);
-broadcast(msg);
-removeDj(uid);
-swap(uid1, uid2);
-move(uid, position)
+.setLimit(limit);
+.broadcast(msg);
+.removeDj(uid);
+.swap(uid1, uid2);
+.move(uid, position);
+.queue  // Array of users in Queue
+.currentdj
+.roles
+.roleOrder
+.historylimit
+.description
 ```
 
 Avalible Events:

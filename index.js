@@ -38,6 +38,18 @@ var app = function (args) {
           _this.guests = data.users;
         });
 
+        events.on('joinRoomReceived', function (data) {
+          _this.queue = data.queue.users;
+          events.once('getUsersReceived', function () {
+            _this.currentdj = (data.queue.currentdj ? _this.getUser(data.queue.currentdj) : null);
+          });
+
+          _this.roles = data.roles;
+          _this.roleOrder = data.roleOrder;
+          _this.historylimit = data.historylimit;
+          _this.description = data.description;
+        });
+
         connection.on('error', function (error) {
           events.emit('error', error);
         });
@@ -347,7 +359,7 @@ app.prototype.whois = function (uid, un) {
 };
 
 app.prototype.getUser = function (uid) {
-  return this.users[uid];
+  return this.users[uid] ? this.users[uid] : null;
 };
 
 app.prototype.getUsers = function () {
@@ -419,14 +431,18 @@ app.prototype.handleResponse = function (e) {
       break;
 
     case API.DATA.EVENTS.USER_JOINED_QUEUE:
+      _this.queue = data.data.queueList;
       events.emit(API.DATA.EVENTS.USER_JOINED_QUEUE, message);
       break;
 
     case API.DATA.EVENTS.USER_LEFT_QUEUE:
+      _this.queue = data.data.queueList;
       events.emit(API.DATA.EVENTS.USER_LEFT_QUEUE, message);
       break;
 
     case API.DATA.EVENTS.ADVANCE:
+      _this.currentdj = (data.data.next.uid ? _this.getUser(data.data.next.uid) : null);
+      _this.queue.shift();
       events.emit(API.DATA.EVENTS.ADVANCE, message);
       break;
 
@@ -475,10 +491,12 @@ app.prototype.handleResponse = function (e) {
       break;
 
     case API.DATA.EVENTS.DJ_QUEUE_MOD_SWAP:
+      _this.queue = data.data.queueList;
       events.emit(API.DATA.EVENTS.DJ_QUEUE_MOD_SWAP, message);
       break;
 
     case API.DATA.EVENTS.DJ_QUEUE_MOD_MOVE:
+      _this.queue = data.data.queueList;
       events.emit(API.DATA.EVENTS.DJ_QUEUE_MOD_MOVE, message);
       break;
 
