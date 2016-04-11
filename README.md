@@ -2,6 +2,10 @@
 
 API for creating musiqpad bots
 
+[![Version npm](https://img.shields.io/npm/v/mqp-api.svg?style=flat-square)](https://www.npmjs.com/package/mqp-api)[![npm Downloads](https://img.shields.io/npm/dm/mqp-api.svg?style=flat-square)](https://www.npmjs.com/package/mqp-api)
+
+[![NPM](https://nodei.co/npm/mqp-api.png)](https://npmjs.org/package/mqp-api)
+
 # Install
 
 ## NodeJS
@@ -10,7 +14,7 @@ API for creating musiqpad bots
 npm install mqp-api -S
 ```
 
-# Set-up your own bot
+# Setting up your own bot
 
 Tip: Change your bot permissions in serverconfig.js to have the same as a co-owner if you want to avoid permissions errors.
 
