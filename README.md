@@ -260,6 +260,7 @@ There are also:
 .roleOrder
 .historylimit
 .description
+.user //also includes Playlists
 ```
 
 Avalible Events:

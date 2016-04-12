@@ -70,6 +70,7 @@ var app = function (args) {
 };
 
 app.prototype.login = function (args) {
+  var _this = this;
   var sha256 = createHash('sha256');
   var inEmail = args.email;
   var inPass = args.password;
@@ -87,6 +88,8 @@ app.prototype.login = function (args) {
     events.once('loginReceived', function (data) {
       if (data.error)
         reject('Login error:' + data.error);
+      _this.user = data.user;
+      _this.users[data.user.uid] = data.user;
       resolve();
     });
   });
@@ -359,6 +362,8 @@ app.prototype.whois = function (uid, un) {
 };
 
 app.prototype.getUser = function (uid) {
+  if (!uid)
+    return this.user;
   return this.users[uid] ? this.users[uid] : null;
 };
 
