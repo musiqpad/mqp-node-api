@@ -280,4 +280,4 @@ Avalible Events:
     }
 ```
 
-- [All events from the CLient API](https://musiqpad.com/api/#musiqpad-client-data-api-events)
+- [All events from the CLient API](https://musiqpad.com/api/#musiqpad-client-data-api-events) (Make sure to camelCase them)

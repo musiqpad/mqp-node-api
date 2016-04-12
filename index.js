@@ -123,7 +123,7 @@ app.prototype.sendPrivateMessage = function (uid, msg) {
   return new Promise(function (resolve, reject) {
     events.once('privateMessageReceived', function (data) {
       if (data.error)
-        reject('Room Info error: ' + data.error);
+        reject('Private Message error: ' + data.error);
       resolve(data);
     });
   });
@@ -136,7 +136,7 @@ app.prototype.joinQueue = function () {
   return new Promise(function (resolve, reject) {
     events.once('djQueueJoinReceived', function (data) {
       if (data.error)
-        reject('Room Info error: ' + data.error);
+        reject('djQueueJoin error: ' + data.error);
       resolve(data);
     });
   });
@@ -149,7 +149,7 @@ app.prototype.leaveQueue = function () {
   return new Promise(function (resolve, reject) {
     events.once('djQueueLeaveReceived', function (data) {
       if (data.error)
-      reject('Room Info error: ' + data.error);
+      reject('djQueueLeave error: ' + data.error);
       resolve(data);
     });
   });
@@ -162,7 +162,7 @@ app.prototype.lockQueue = function () {
   return new Promise(function (resolve, reject) {
     events.once('leaveQueueReceived', function (data) {
       if (data.error)
-      reject('Room Info error: ' + data.error);
+      reject('djQueueLock error: ' + data.error);
       resolve(data);
     });
   });
@@ -175,7 +175,7 @@ app.prototype.cycle = function () {
   return new Promise(function (resolve, reject) {
     events.once('djQueueCycleReceived', function (data) {
       if (data.error)
-      reject('Room Info error: ' + data.error);
+      reject('djQueueCycle error: ' + data.error);
       resolve(data);
     });
   });
@@ -188,7 +188,7 @@ app.prototype.skip = function () {
   return new Promise(function (resolve, reject) {
     events.once('djQueueModSkipReceived', function (data) {
       if (data.error)
-      reject('Room Info error: ' + data.error);
+      reject('djQueueModSkip error: ' + data.error);
       resolve(data);
     });
   });
@@ -205,7 +205,7 @@ app.prototype.deleteChat = function (cid, uid) {
   return new Promise(function (resolve, reject) {
     events.once('deleteChatReceived', function (data) {
       if (data.error)
-        reject('Room Info error: ' + data.error);
+        reject('deleteChat error: ' + data.error);
       resolve(data);
     });
   });
@@ -222,7 +222,7 @@ app.prototype.move = function (uid, position) {
   return new Promise(function (resolve, reject) {
     events.once('djQueueModMoveReceived', function (data) {
       if (data.error)
-        reject('Room Info error: ' + data.error);
+        reject('djQueueModMove error: ' + data.error);
       resolve(data);
     });
   });
@@ -239,7 +239,7 @@ app.prototype.swap = function (uid, uid) {
   return new Promise(function (resolve, reject) {
     events.once('djQueueModSwapReceived', function (data) {
       if (data.error)
-        reject('Room Info error: ' + data.error);
+        reject('djQueueModSwap error: ' + data.error);
       resolve(data);
     });
   });
@@ -255,7 +255,7 @@ app.prototype.removeDj = function (uid) {
   return new Promise(function (resolve, reject) {
     events.once('djQueueModRemoveReceived', function (data) {
       if (data.error)
-        reject('Room Info error: ' + data.error);
+        reject('djQueueModRemove error: ' + data.error);
       resolve(data);
     });
   });
@@ -271,7 +271,7 @@ app.prototype.broadcast = function (message) {
   return new Promise(function (resolve, reject) {
     events.once('broadcastMessageReceived', function (data) {
       if (data.error)
-        reject('Room Info error: ' + data.error);
+        reject('broadcastMessage error: ' + data.error);
       resolve(data);
     });
   });
@@ -287,7 +287,7 @@ app.prototype.setLimit = function (limit) {
   return new Promise(function (resolve, reject) {
     events.once('djQueueLimitReceived', function (data) {
       if (data.error)
-        reject('Room Info error: ' + data.error);
+        reject('djQueueLimit error: ' + data.error);
       resolve(data);
     });
   });
@@ -304,7 +304,7 @@ app.prototype.setRole = function (uid, role) {
   return new Promise(function (resolve, reject) {
     events.once('setRoleReceived', function (data) {
       if (data.error)
-        reject('Room Info error: ' + data.error);
+        reject('setRole error: ' + data.error);
       resolve(data);
     });
   });
@@ -322,7 +322,7 @@ app.prototype.ban = function (uid, duration, reason) {
   return new Promise(function (resolve, reject) {
     events.once('banUserReceived', function (data) {
       if (data.error)
-        reject('Room Info error: ' + data.error);
+        reject('banUser error: ' + data.error);
       resolve(data);
     });
   });
@@ -338,7 +338,7 @@ app.prototype.unban = function (uid) {
   return new Promise(function (resolve, reject) {
     events.once('unbanUserReceived', function (data) {
       if (data.error)
-        reject('Room Info error: ' + data.error);
+        reject('unbanUser error: ' + data.error);
       resolve(data);
     });
   });
@@ -355,7 +355,7 @@ app.prototype.whois = function (uid, un) {
   return new Promise(function (resolve, reject) {
     events.once('whoisReceived', function (data) {
       if (data.error)
-        reject('Room Info error: ' + data.error);
+        reject('whois error: ' + data.error);
       resolve(data);
     });
   });
