@@ -322,7 +322,7 @@ app.prototype.ban = function (uid, duration, reason) {
   return new Promise(function (resolve, reject) {
     events.once('banUserReceived', function (data) {
       if (data.error)
-        reject('banUser error: ' + data.error);
+        reject('banUser error: ' + data.error + (data.text ? ' - ' + data.text : ''));
       resolve(data);
     });
   });
