@@ -245,6 +245,22 @@ app.prototype.swap = function (uid, uid) {
   });
 };
 
+app.prototype.addDj = function (uid) {
+  this.sendJSON({
+    type: 'djQueueModAdd',
+    data: {
+      uid: uid,
+    },
+  });
+  return new Promise(function (resolve, reject) {
+    events.once('djQueueModAddReceived', function (data) {
+	  if (data.error)
+        reject('djQueueModAdd error: ' + data.error);
+      resolve(data);
+    });
+  });
+};
+
 app.prototype.removeDj = function (uid) {
   this.sendJSON({
     type: 'djQueueModRemove',
