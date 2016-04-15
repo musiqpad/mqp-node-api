@@ -48,6 +48,7 @@ var app = function (args) {
           _this.roleOrder = data.roleOrder;
           _this.historylimit = data.historylimit;
           _this.description = data.description;
+          _this.isQueueLocked = data.queue.lock;
         });
 
         connection.on('error', function (error) {
@@ -156,11 +157,41 @@ app.prototype.leaveQueue = function () {
 };
 
 app.prototype.lockQueue = function () {
+  if(this.isQueueLocked == true)
+    return Promise.reject('Queue is already locked');
   this.sendJSON({
     type: 'djQueueLock',
   });
   return new Promise(function (resolve, reject) {
-    events.once('leaveQueueReceived', function (data) {
+    events.once('djQueueLockReceived', function (data) {
+      if (data.error)
+      reject('djQueueLock error: ' + data.error);
+      resolve(data);
+    });
+  });
+};
+
+app.prototype.unlockQueue = function () {
+  if(this.isQueueLocked == false)
+    return Promise.reject('Queue is already unlocked');
+  this.sendJSON({
+    type: 'djQueueLock',
+  });
+  return new Promise(function (resolve, reject) {
+    events.once('djQueueLockReceived', function (data) {
+      if (data.error)
+      reject('djQueueLock error: ' + data.error);
+      resolve(data);
+    });
+  });
+};
+
+app.prototype.toggleLockQueue = function () {
+  this.sendJSON({
+    type: 'djQueueLock',
+  });
+  return new Promise(function (resolve, reject) {
+    events.once('djQueueLockReceived', function (data) {
       if (data.error)
       reject('djQueueLock error: ' + data.error);
       resolve(data);
@@ -468,6 +499,7 @@ app.prototype.handleResponse = function (e) {
       break;
 
     case API.DATA.EVENTS.DJ_QUEUE_LOCK:
+      _this.isQueueLocked = message.state;
       events.emit(API.DATA.EVENTS.DJ_QUEUE_LOCK, message);
       break;
 
