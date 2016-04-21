@@ -1,9 +1,10 @@
 {
   "name": "mqp-api",
   "version": "0.2.0",
-  "main": "index.js",
+  "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nyc ava",
+    "test-coveralls": "nyc ava && nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -18,6 +19,11 @@
   "dependencies": {
     "bluebird": "^3.3.4",
     "sha.js": "^2.4.5",
-    "websocket": "^1.0.22"
+    "ws": "^1.1.0"
+  },
+  "devDependencies": {
+    "ava": "^0.14.0",
+    "coveralls": "^2.11.9",
+    "nyc": "^6.4.0"
   }
 }
