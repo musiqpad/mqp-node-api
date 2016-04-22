@@ -18,12 +18,13 @@ npm install mqp-api -S
 
 Tip: Change your bot permissions in serverconfig.js to have the same as a co-owner if you want to avoid permissions errors.
 
-The first thing you'll need to do is to create a new Bot. You can get these values by typing `config` into the DevTools console on your Pad (if the serverhost is empty, just use your domain).
+The first thing you'll need to do is to create a new Bot. You can get these values by typing `config` into the DevTools console on your Pad (if the serverhost is empty, use your domain).
 
 ```js
 const mqpBot = require('mqp-api');
 
 var bot = new mqpBot({
+  autoreconnect: true, // Enabled by default
   useSSL: true,
   socketDomain: 'domain.tld',
   socketPort: 8082,
@@ -35,10 +36,10 @@ Now we connect to the Websockets Server and login
 ```js
 bot.connect()
   .then(function() {
-    //This needs to be returned because the function itself retuns a Promise!
+    // This needs to be returned because the function itself retuns a Promise!
     return bot.login({
       email: 'mail@domain.tld',
-      password: 'MyPassword', //Instead Of mail and pw, you can also use a token
+      password: 'MyPassword', // You can also use a token to login
     });
   })
   .then(function() {
@@ -46,8 +47,7 @@ bot.connect()
     // Do what ever you want to happen after you successfully logged in
     // ...
   })
-  //Catch errors, you can do that after every .then
-  //If you don't do that, errors get logged to the console.
+  // Catch errors, you can do that after every .then
   .catch(function(e) {
     console.log('ERROR: ' + JSON.stringify(e));
   });
@@ -56,36 +56,38 @@ bot.connect()
 Now we create an Event-listener for chat messages. To do that, you can also use .once if you want the function to be only called once.
 
 ```js
-bot.on('chat', function(data) {
-  if (data.msg.indexOf('@bot') != -1)
+bot.on('chat', function(data) { // We pass in a function as callback which accepts one argument, data.
+                                // Everytime a chat message is recieved, this function will be called and
+                                // useful informations will be passed in via this first argument.
+  if (data.msg.indexOf('@bot') != -1) // Check if data.msg contains '@bot'
     bot.sendMessage('Hey, ' + data.user.un + '!');
 
-  if (data.msg.indexOf('!kill ') != -1) {
-    var user = data.msg.replace('!kill ', '');
-    bot.sendMessage(user + ' got killed by '+ data.user.un + "! Oh no!");
+  if (data.msg.indexOf('!kill ') != -1) { // Check if msg contains !kill
+    var user = data.msg.replace('!kill ', ''); // Remove !kill from the recieved message and save the
+                                               // remaining string as user
+    bot.sendMessage(user + ' got killed by '+ data.user.un + "! Oh no!"); // 
   }
 });
 ```
 
-## Some examples:
+## Some other examples:
 
 ```js
 // Add an event Listener for Chatevents
 bot.on('chat', (data) => {
-  //If the message contains @YourBot
-  if (data.msg.indexOf('@YourBot') != -1)
-    //Send a
+  if (data.msg.indexOf('@YourBot') != -1)   //If the message contains @YourBot
+    //Send a private message: bot.sendPrivateMessage(uid, message)
     bot.sendPrivateMessage(data.user.uid, 'Hey, ' + data.user.un + '! To check all of my commands, type "!help".');
 
 
-  // IF the message (data.msg) includes !help
+  // If the message (data.msg) includes !help
   if (data.msg.indexOf('!help') != -1) {
-    //Get the Room Infos
-    bot.getRoomInfo().then(function (data2) {
-      //And .then() use those (data2) to send a Message
+    // Get the room infos
+    bot.getRoomInfo().then(function (roomInfos) {
+      //And .then() use those to send a Message
       bot.sendMessage("I can't help you. But I can give you some Infos about the room: There are currently " +
-      // (Object.keys(bot.users).length + 1) gets the number of online users (Works everywhere)
-      (Object.keys(bot.users).length + 1) + ' Users connected and ' + data2.queue + ' users in the Queue');
+      // (Object.keys(bot.users).length + 1) gets the number of online users
+      (Object.keys(bot.users).length + 1) + ' Users connected and ' + roomInfos.queue + ' users in the Queue');
     });
   }
 });
@@ -105,15 +107,21 @@ bot.on('privateMessage', function (data) {
 
 ## API
 
-The API also contains a lot of useful functions:
+Available functions:
 
 --------------------------------------------------------------------------------
 
-getUsers():
+### getUsers():
+
+Example:
 
 ```js
-bot.getUsers()
+bot.getUsers().then(function(data) {
+    // ...
+});
 ```
+
+Returned Object:
 
 ```js
 {
@@ -129,11 +137,15 @@ bot.getUsers()
 
 --------------------------------------------------------------------------------
 
-getUser():
+### getUser:
+
+Example:
 
 ```js
-bot.getUser(uid)
+var user = bot.getUser(uid);
 ```
+
+Returned Object:
 
 ```js
 {
@@ -147,10 +159,12 @@ bot.getUser(uid)
 
 --------------------------------------------------------------------------------
 
-sendJSON():
+### sendJSON:
+
+Example:
 
 ```js
-bot.sendJSON({type: 'getUsers'})
+bot.sendJSON({type: 'getUsers'});
 ```
 
 ```js
@@ -163,11 +177,17 @@ bot.sendJSON({type: 'getUsers'})
 
 --------------------------------------------------------------------------------
 
-getRoomInfo():
+### getRoomInfo:
+
+Example:
 
 ```js
-bot.getRoomInfo()
+bot.getRoomInfo().then(function(data) {
+    // ...
+});
 ```
+
+Returned Object:
 
 ```js
 {
@@ -184,7 +204,9 @@ bot.getRoomInfo()
 
 --------------------------------------------------------------------------------
 
-sendPrivateMessage():
+### sendPrivateMessage:
+
+Example:
 
 ```js
 bot.sendPrivateMessage(uid, msg)
@@ -199,7 +221,7 @@ bot.sendPrivateMessage(7, "Hey, what's up?")
 
 --------------------------------------------------------------------------------
 
-joinQueue(): //leaveQueue, lockQueue, unlockQueue, toggleLockQueue, cycle and skip are the same.
+### joinQueue, leaveQueue, lockQueue, unlockQueue, toggleLockQueue, cycle, skip:
 
 ```js
 bot.joinQueue()
@@ -214,11 +236,9 @@ bot.joinQueue()
 
 --------------------------------------------------------------------------------
 
-deleteChat():
+### deleteChat():
 
-```js
-bot.deleteChat()
-```
+Example: 
 
 ```js
 bot.deleteChat(cid, uid)
@@ -229,7 +249,9 @@ bot.deleteChat(cid, uid)
 
 --------------------------------------------------------------------------------
 
-whois():
+### whois():
+
+Usage:
 
 ```js
 bot.whois(uid, un)
@@ -237,7 +259,9 @@ bot.whois(uid, un)
 
 --------------------------------------------------------------------------------
 
-unban() / ban():
+### unban() / ban():
+
+Usage:
 
 ```js
 bot.ban(uid, duration, reason);
@@ -254,6 +278,8 @@ There are also:
 .removeDj(uid);
 .swap(uid1, uid2);
 .move(uid, position);
+
+// Don't change these, create new Objects:
 .queue  // Array of users in Queue
 .currentdj
 .roles
@@ -266,6 +292,9 @@ There are also:
 Avalible Events:
 
 - rawSocket
+- reconnected
+- error // Gets passed the error object
+- closed
 - chat
 
 ```
@@ -280,4 +309,30 @@ Avalible Events:
     }
 ```
 
-- [All events from the CLient API](https://musiqpad.com/api/#musiqpad-client-data-api-events) (Make sure to camelCase them)
+All of these events get passed the same like the client api:
+
+- advance
+- broadcastMessage
+- chatCommand
+- deleteChat
+- djQueueModAdd
+- djQueueCycle
+- djQueueLimit
+- djQueueLock
+- djQueueModMove
+- djQueueModSkip
+- djQueueModSwap
+- djQueueModRemove
+- djQueueSkip
+- privateMessage
+- response
+- systemMessage
+- userBanned
+- userJoined
+- userJoinedQueue
+- userLeft
+- userLeftQueue
+- moderateSetRole
+- userUnbanned
+- userUpdate
+- voteUpdate

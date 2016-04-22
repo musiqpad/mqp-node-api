@@ -10,43 +10,72 @@ var app = function (args) {
 
   var _this = this;
   this.settings = {
+    autoreconnect: typeof args.autoreconnect !== 'undefined' ? args.autoreconnect : true,
     useSSL: args.useSSL,
     socketDomain: args.socketDomain,
     socketPort: args.socketPort,
+    password: null,
+    email: null,
+    token: null,
   };
-
   this.connect = function () {
-    var ws = new WebSocket((this.settings.useSSL ? 'wss' : 'ws') + '://' +
-    this.settings.socketDomain + ':' + this.settings.socketPort);
-    this.ws = ws;
-
-    return new Promise(function (resolve, reject) {
-      ws.on('open', function () {
-        _this.sendJSON({
-          type: 'joinRoom',
-          data: {},
-        });
-        _this.sendJSON({
-          type: 'getUsers',
-        });
+    this.connectToSocket();
+    return new Promise(function (resolve) {
+      events.once('joinRoomReceived', function () {
         resolve();
-      });
-
-      ws.on('message', function (message) {
-        events.emit('rawSocket', message);
-        _this.handleResponse(message);
-      });
-
-      ws.on('error', function (error) {
-        events.emit('error', error);
-      });
-
-      ws.on('close', function (e) {
-        reject('Connection Closed: ' + e.toString());
-        events.emit('closed', e);
       });
     });
   };
+
+  this.connectToSocket = function () {
+    _this.ws = new WebSocket((_this.settings.useSSL ? 'wss' : 'ws') + '://' +
+    _this.settings.socketDomain + ':' + _this.settings.socketPort);
+    events.emit('connectingToSocket');
+    return;
+  };
+
+  events.on('connectingToSocket', function () {
+    _this.ws.on('open', function () {
+      _this.sendJSON({
+        type: 'joinRoom',
+        data: {},
+      });
+      _this.sendJSON({
+        type: 'getUsers',
+      });
+      if (_this.reconnection) {
+        _this.login({
+          email: _this.settings.email,
+          password: _this.settings.password,
+          token: _this.settings.token,
+        }).then(function () {
+          events.emit('reconnected');
+        });
+      }
+    });
+
+    _this.ws.on('message', function (message) {
+      _this.handleResponse(message);
+      events.emit('rawSocket', message);
+    });
+
+    _this.ws.on('error', function (error) {
+      events.emit('error', error);
+      if (_this.settings.autoreconnect) {
+        this.reconnection = 1;
+        setTimeout(_this.connectToSocket, 5e3);
+      }
+    });
+
+    _this.ws.on('close', function (e) {
+      events.emit('closed', e);
+      if (_this.settings.autoreconnect) {
+        this.reconnection = 1;
+        setTimeout(_this.connectToSocket, 5e3);
+        console.log('Reconnecting...');
+      }
+    });
+  });
 
   events.on('getUsersReceived', function (data) {
     _this.users = data.users;
@@ -75,8 +104,11 @@ app.prototype.login = function (args) {
   var _this = this;
   var sha256 = createHash('sha256');
   var inEmail = args.email;
+  this.settings.email = args.email;
   var inPass = args.password;
+  this.settings.password = args.password;
   var token = args.token;
+  this.settings.token = args.token;
   var obj = {
     type: 'login',
     data: {
