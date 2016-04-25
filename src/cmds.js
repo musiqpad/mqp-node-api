@@ -347,10 +347,31 @@ module.exports = {
     });
   },
 
+  vote: function (voteType) {
+    var _this = this;
+    this.sendJSON({
+      type: 'vote',
+      data: {
+        voteType: voteType,
+      },
+    });
+    return new Promise(function (resolve, reject) {
+      _this.once('voteReceived', function (data) {
+        if (data.error)
+          reject('vote error: ' + data.error);
+        resolve(data);
+      });
+    });
+  },
+  
   getUser: function (uid) {
     if (!uid)
       return this.user;
     return this.users[uid] ? this.users[uid] : null;
+  },
+
+  getMedia: function () {
+    return this.media;
   },
 
   getUsers: function () {

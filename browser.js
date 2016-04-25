@@ -1,0 +1,1 @@
+global.mqpAPI = require('./src/app');

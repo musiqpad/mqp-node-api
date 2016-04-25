@@ -14,6 +14,12 @@ API for creating musiqpad bots
 npm install mqp-api -S
 ```
 
+## Browser
+
+```html
+<script src="https://npmcdn.com/mqp-api/mqp-api.min.js"></script>
+```
+
 # Setting up your own bot
 
 Tip: Change your bot permissions in serverconfig.js to have the same as a co-owner if you want to avoid permissions errors.
@@ -21,9 +27,9 @@ Tip: Change your bot permissions in serverconfig.js to have the same as a co-own
 The first thing you'll need to do is to create a new Bot. You can get these values by typing `config` into the DevTools console on your Pad (if the serverhost is empty, use your domain).
 
 ```js
-const mqpBot = require('mqp-api');
+const mqpAPI = require('mqp-api'); // If you use the browser version, mqpAPI is already available
 
-var bot = new mqpBot({
+var bot = new mqpAPI({
   autoreconnect: true, // Enabled by default
   useSSL: true,
   socketDomain: 'domain.tld',
@@ -194,8 +200,6 @@ Returned Object:
     name: name,
     slug: slug,
     greet: greet,
-    bg: bg,
-    people: userCount,
     queue: queueLength,
     media: currentsong,
     staffroles: staffroles
@@ -278,9 +282,11 @@ There are also:
 .removeDj(uid);
 .swap(uid1, uid2);
 .move(uid, position);
+.vote(voteType);
 
 // Don't change these, create new Objects:
 .queue  // Array of users in Queue
+.media // If you can, use the data from advance events instead!
 .currentdj
 .roles
 .roleOrder

@@ -1,5 +1,5 @@
 const createHash = require('sha.js');
-const WebSocket = require('ws');
+const WebSocket = global.WebSocket || global.MozWebSocket || require("ws");
 
 const events = require('./events');
 const API = require('./api');
@@ -30,12 +30,7 @@ var app = function (args) {
   this.connectToSocket = function () {
     _this.ws = new WebSocket((_this.settings.useSSL ? 'wss' : 'ws') + '://' +
     _this.settings.socketDomain + ':' + _this.settings.socketPort);
-    events.emit('connectingToSocket');
-    return;
-  };
-
-  events.on('connectingToSocket', function () {
-    _this.ws.on('open', function () {
+    _this.ws.onopen = function () {
       _this.sendJSON({
         type: 'joinRoom',
         data: {},
@@ -52,30 +47,31 @@ var app = function (args) {
           events.emit('reconnected');
         });
       }
-    });
+    };
 
-    _this.ws.on('message', function (message) {
-      _this.handleResponse(message);
-      events.emit('rawSocket', message);
-    });
+    _this.ws.onmessage = function (message) {
+      _this.handleResponse(message.data);
+      events.emit('rawSocket', message.data);
+    };
 
-    _this.ws.on('error', function (error) {
+    _this.ws.onerror = function (error) {
       events.emit('error', error);
       if (_this.settings.autoreconnect) {
         this.reconnection = 1;
         setTimeout(_this.connectToSocket, 5e3);
       }
-    });
+    };
 
-    _this.ws.on('close', function (e) {
+    _this.ws.onclose = function (e) {
       events.emit('closed', e);
       if (_this.settings.autoreconnect) {
         this.reconnection = 1;
         setTimeout(_this.connectToSocket, 5e3);
         console.log('Reconnecting...');
       }
-    });
-  });
+    };
+    return;
+  };
 
   events.on('getUsersReceived', function (data) {
     _this.users = data.users;
@@ -204,6 +200,7 @@ app.prototype.handleResponse = function (e) {
     case API.DATA.EVENTS.ADVANCE:
       _this.currentdj = (data.data.next.uid ? _this.getUser(data.data.next.uid) : null);
       _this.queue.shift();
+      _this.media = data.data.next.song;
       events.emit(API.DATA.EVENTS.ADVANCE, message);
       break;
 
@@ -279,5 +276,5 @@ app.prototype.handleResponse = function (e) {
       break;
   };
 };
-
+app.data = API.data;
 module.exports = app;
