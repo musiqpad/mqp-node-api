@@ -1,9 +1,11 @@
 const createHash = require('sha.js');
 const WebSocket = global.WebSocket || global.MozWebSocket || require("ws");
+const https = require('https');
 
 const events = require('./events');
 const API = require('./api');
 const cmds = require('./cmds.js');
+const apiKey = 'd0535c57-4a56-4b17-af54-3960031f0575';
 var _this;
 
 var app = function (args) {
@@ -11,20 +13,72 @@ var app = function (args) {
   var _this = this;
   this.settings = {
     autoreconnect: typeof args.autoreconnect !== 'undefined' ? args.autoreconnect : true,
-    useSSL: args.useSSL,
-    socketDomain: args.socketDomain,
-    socketPort: args.socketPort,
+    useSSL: args.useSSL || null,
+    socketDomain: args.socketDomain || null,
+    socketPort: args.socketPort || null,
     password: null,
     email: null,
     token: null,
+    room: args.room || null,
   };
-  this.connect = function () {
-    this.connectToSocket();
-    return new Promise(function (resolve) {
-      events.once('joinRoomReceived', function () {
-        resolve();
+  
+  this.getPadBySlug = function (slug) {
+    return new Promise(function (resolve, reject) {
+      https.get('https://api.musiqpad.com/pad/list?apikey=' + apiKey, function (res) {
+        var output = '';
+        res.setEncoding('utf8');
+        res.on('data', function (chunk) {
+            output += chunk;
+        });
+
+        res.on('end', function() {
+            var obj = JSON.parse(output);
+            for(var i = 0; i < obj.length; i++) {
+              if(obj[i].slug == slug) {
+                resolve({
+                  socketPort: obj[i].socket_host.split(':')[1],
+                  socketDomain: obj[i].socket_host.split(':')[0],
+                  useSSL: obj[i].is_secure,
+                })
+              }
+              if(obj.slug != slug && i == obj.lenght - 1) {
+                reject("Couldn't find room");
+              }
+            }
+        });
+      }).on('error', function (e) {
+        reject('Error getting Pad list: ' + e.message);
       });
-    });
+    })
+  }
+  
+  this.connect = function (opts) {
+    if(opts) {
+      _this.settings.socketDomain = opts.socketDomain || null;
+      _this.settings.socketPort = opts.socketPort || null;
+      _this.settings.room = opts.room || null;
+      _this.settings.useSSL = opts.useSSL || null;
+    }
+    if(_this.settings.room)
+      return new Promise(function (resolve) {
+        _this.getPadBySlug(_this.settings.room).then(function (data) {
+          _this.settings.socketPort = data.socketPort;
+          _this.settings.socketDomain = data.socketDomain;
+          _this.settings.useSSL = data.useSSL;
+
+          _this.connectToSocket();
+          events.once('joinRoomReceived', function () {
+            resolve();
+          });
+        })
+      });
+    else
+      return new Promise(function (resolve) {
+        _this.connectToSocket();
+        events.once('joinRoomReceived', function () {
+          resolve();
+        });
+      });
   };
 
   this.connectToSocket = function () {

@@ -1,6 +1,6 @@
 {
   "name": "mqp-api",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "main": "src/app.js",
   "keywords": [
     "musiqpad",
@@ -14,7 +14,7 @@
   "scripts": {
     "test": "nyc ava",
     "test-coveralls": "nyc ava && nyc report --reporter=text-lcov | coveralls",
-    "build-web": "browserify -g uglifyify ./browser.js > mqp-api.min.js"
+    "build-web": "browserify ./browser.js -d -p [minifyify --no-map] > mqp-api.min.js"
   },
   "repository": {
     "type": "git",
@@ -32,6 +32,7 @@
     "ws": "^1.1.0"
   },
   "devDependencies": {
+    "minifyify": "^7.3.3",
     "ava": "^0.14.0",
     "browserify": "^13.0.0",
     "coveralls": "^2.11.9",
