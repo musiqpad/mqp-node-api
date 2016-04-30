@@ -1,6 +1,6 @@
-# MQP-API
+# MQP-API [![Version npm](https://img.shields.io/npm/v/mqp-api.svg)](https://www.npmjs.com/package/mqp-api) [![npm Downloads](https://img.shields.io/npm/dm/mqp-api.svg)](https://www.npmjs.com/package/mqp-api) [![Build Status](https://travis-ci.org/musiqpad/mqp-node-api.svg?branch=master)](https://travis-ci.org/musiqpad/mqp-node-api)
 
-API for creating musiqpad bots [![Version npm](https://img.shields.io/npm/v/mqp-api.svg)](https://www.npmjs.com/package/mqp-api) [![npm Downloads](https://img.shields.io/npm/dm/mqp-api.svg)](https://www.npmjs.com/package/mqp-api) [![Build Status](https://travis-ci.org/musiqpad/mqp-node-api.svg?branch=master)](https://travis-ci.org/musiqpad/mqp-node-api)
+API for creating musiqpad bots
 
 [![NPM](https://nodei.co/npm/mqp-api.png)](https://npmjs.org/package/mqp-api)
 
