@@ -15,7 +15,7 @@ npm install mqp-api -S
 ## Browser
 
 ```html
-<script src="https://npmcdn.com/mqp-api/mqp-api.min.js"></script>
+<script src="https://cdn.musiqpad.com/js/mqp-api.min.js"></script>
 ```
 
 # Setting up your own bot
