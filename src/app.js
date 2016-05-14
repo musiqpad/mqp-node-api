@@ -85,6 +85,19 @@ var app = function (args) {
     _this.ws = new WebSocket((_this.settings.useSSL ? 'wss' : 'ws') + '://' +
     _this.settings.socketDomain + ':' + _this.settings.socketPort);
     _this.ws.onopen = function () {
+      if (_this.reconnecting) {
+        events.once('joinRoomReceived', function () {
+          console.log("Reconnected");
+          _this.reconnecting = 0;
+          _this.login({
+            email: _this.settings.email,
+            password: _this.settings.password,
+            token: _this.settings.token,
+          }).then(function () {
+            events.emit('reconnected');
+          });
+        });
+      }
       _this.sendJSON({
         type: 'joinRoom',
         data: {},
@@ -92,15 +105,6 @@ var app = function (args) {
       _this.sendJSON({
         type: 'getUsers',
       });
-      if (_this.reconnection) {
-        _this.login({
-          email: _this.settings.email,
-          password: _this.settings.password,
-          token: _this.settings.token,
-        }).then(function () {
-          events.emit('reconnected');
-        });
-      }
     };
 
     _this.ws.onmessage = function (message) {
@@ -111,7 +115,7 @@ var app = function (args) {
     _this.ws.onerror = function (error) {
       events.emit('error', error);
       if (_this.settings.autoreconnect) {
-        this.reconnection = 1;
+        _this.reconnecting = 1;
         setTimeout(_this.connectToSocket, 5e3);
       }
     };
@@ -119,7 +123,7 @@ var app = function (args) {
     _this.ws.onclose = function (e) {
       events.emit('closed', e);
       if (_this.settings.autoreconnect) {
-        this.reconnection = 1;
+        _this.reconnecting = 1;
         setTimeout(_this.connectToSocket, 5e3);
         console.log('Reconnecting...');
       }

@@ -46,23 +46,26 @@ bot.connect({
   // socketDomain: 'example.com',
   // socketPort: 8082,
 }).then(() => {
-    return bot.login({
-      email: 'mail@domain.tld',
-      password: 'MyPassword',
+  return bot.login({
+    email: 'mail@domain.tld',
+    password: 'MyPassword',
 
-      // You can also use a token to login:
-      // token: '4f5a2e48-04c5-46e6-bd61-faeeeca69d6d',
-    });
-  })
-  .then(() => {
-    console.log('Logged in!');
-    // Do what ever you want to happen after you successfully logged in
-    // ...
-  })
-  // Catch errors
-  .catch((e) => {
-    console.log('ERROR: ' + JSON.stringify(e));
+    // You can also use a token to login:
+    // token: '4f5a2e48-04c5-46e6-bd61-faeeeca69d6d',
   });
+})
+.then(() => {
+  console.log('Logged in!');
+  // Do what ever you want to happen after you successfully logged in for the first time
+  // ...
+})
+// Catch errors
+.catch((e) => {
+  console.log('ERROR: ' + JSON.stringify(e));
+});
+bot.on('reconnected', () => {
+  // Do what ever you want to happen after you successfully reconnected
+});
 ```
 
 Now we create an Event-listener for chat messages. To see what every event does, check the wiki. Instead of `.on`, you can also use `.once` if you want the function to be only called once.
