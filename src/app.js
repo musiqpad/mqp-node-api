@@ -1,17 +1,20 @@
 const createHash = require('sha.js');
 const WebSocket = global.WebSocket || global.MozWebSocket || require("ws");
 const https = require('https');
+const Promise = require('bluebird');
+const winston = require('winston');
 
 const events = require('./events');
 const API = require('./api');
 const cmds = require('./cmds.js');
 const apiKey = 'd0535c57-4a56-4b17-af54-3960031f0575';
+const logger = require('./log.js'); 
+
 var _this;
 
 var app = function (args) {
-
   var _this = this;
-  this.settings = {
+  var settings = this.settings = {
     autoreconnect: typeof args.autoreconnect !== 'undefined' ? args.autoreconnect : true,
     useSSL: args.useSSL || null,
     socketDomain: args.socketDomain || null,
@@ -20,9 +23,38 @@ var app = function (args) {
     email: null,
     token: null,
     room: args.room || null,
+    logging: {
+      logFile: args.logging.logFile || null,
+      logLevel: typeof args.logging.logLevel !== 'undefined' ? args.logging.logLevel : 'info',
+    } || null,
   };
-  
+
+  logger.level = settings.logging.logLevel;
+  logger.log("info", "LogLevel: " + args.logging.logLevel);
+  if(settings.logging.logFile)
+    logger.add(winston.transports.File, {
+      prettyPrint: false,
+      level: 'debug',
+      silent: false,
+      colorize: true,
+      timestamp: true,
+      filename: settings.logging.logFile,
+      maxFiles: 10,
+      json: true,
+      timestamp: function() {
+        var currentdate = new Date(); 
+        var datetime = "[" + currentdate.getDate() + "/"
+              + (currentdate.getMonth()+1)  + "/" 
+              + currentdate.getFullYear() + " "  
+              + currentdate.getHours() + ":"  
+              + currentdate.getMinutes() + ":" 
+              + currentdate.getSeconds() + "]";
+        return datetime;
+      },
+    });
+
   this.getPadBySlug = function (slug) {
+    logger.log('debug', "Getting pad by Slug: " + slug);
     return new Promise(function (resolve, reject) {
       https.get('https://api.musiqpad.com/pad/list?apikey=' + apiKey, function (res) {
         var output = '';
@@ -32,9 +64,11 @@ var app = function (args) {
         });
 
         res.on('end', function() {
+            logger.log('debug', "Got pad list");
             var obj = JSON.parse(output);
             for(var i = 0; i < obj.length; i++) {
               if(obj[i].slug == slug) {
+                logger.log('debug', "Successfully extracted pad info from list");
                 resolve({
                   socketPort: obj[i].socket_host.split(':')[1],
                   socketDomain: obj[i].socket_host.split(':')[0],
@@ -53,6 +87,7 @@ var app = function (args) {
   }
   
   this.connect = function (opts) {
+    logger.log('info', "Connecting to pad");
     if(opts) {
       _this.settings.socketDomain = opts.socketDomain || null;
       _this.settings.socketPort = opts.socketPort || null;
@@ -82,12 +117,14 @@ var app = function (args) {
   };
 
   this.connectToSocket = function () {
+    logger.log('info', "Connecting to socket");
+
     _this.ws = new WebSocket((_this.settings.useSSL ? 'wss' : 'ws') + '://' +
     _this.settings.socketDomain + ':' + _this.settings.socketPort);
     _this.ws.onopen = function () {
       if (_this.reconnecting) {
         events.once('joinRoomReceived', function () {
-          console.log("Reconnected");
+          logger.log("info", "Reconnected");
           _this.reconnecting = 0;
           _this.login({
             email: _this.settings.email,
@@ -113,6 +150,7 @@ var app = function (args) {
     };
 
     _this.ws.onerror = function (error) {
+      logger.log('error', "Websocket error: " + e);
       events.emit('error', error);
       if (_this.settings.autoreconnect) {
         _this.reconnecting = 1;
@@ -121,11 +159,12 @@ var app = function (args) {
     };
 
     _this.ws.onclose = function (e) {
+      logger.log('error', "Websocket closed: " + e);
       events.emit('closed', e);
       if (_this.settings.autoreconnect) {
         _this.reconnecting = 1;
         setTimeout(_this.connectToSocket, 5e3);
-        console.log('Reconnecting...');
+        logger.log("info", 'Reconnecting...');
       }
     };
     return;
@@ -137,8 +176,10 @@ var app = function (args) {
   });
 
   events.on('joinRoomReceived', function (data) {
+    logger.log('info', "Joined Room");
     _this.queue = data.queue.users;
     events.once('getUsersReceived', function () {
+      logger.log('info', "Got connected Users");
       _this.currentdj = (data.queue.currentdj ? _this.getUser(data.queue.currentdj) : null);
     });
 
@@ -148,13 +189,18 @@ var app = function (args) {
     _this.description = data.description;
     _this.isQueueLocked = data.queue.lock;
   });
+  logger.log('debug', "Creating new bot with " + JSON.stringify(args));
 
   for (var method in cmds) {
     app.prototype[method] = cmds[method].bind(this);
   }
+  
+  logger.log('debug', "Loaded commands");
 };
 
 app.prototype.login = function (args) {
+  logger.log('debug', "Logging in with " + JSON.stringify(args));
+
   var _this = this;
   var sha256 = createHash('sha256');
   var inEmail = args.email;
@@ -175,8 +221,11 @@ app.prototype.login = function (args) {
   this.sendJSON(obj);
   return new Promise(function (resolve, reject) {
     events.once('loginReceived', function (data) {
-      if (data.error)
+      if (data.error) {
         reject('Login error:' + data.error);
+      }
+      logger.log('info', "Logged in!");
+
       _this.user = data.user;
       _this.users[data.user.uid] = data.user;
       resolve();
@@ -185,15 +234,18 @@ app.prototype.login = function (args) {
 };
 
 app.prototype.sendJSON = function (inObj) {
+  logger.log('silly', "Sending JSON Object: " + JSON.stringify(inObj));
   this.ws.send(JSON.stringify(inObj));
   return;
 };
 
 app.prototype.on = function (type, value) {
+  logger.log('silly', "Registered event listener: " + JSON.stringify(type));
   return events.on(type, value);
 };
 
 app.prototype.once = function (type, value) {
+  logger.log('silly', "Registered event listener: " + JSON.stringify(type));
   return events.once(type, value);
 };
 
@@ -209,6 +261,8 @@ app.prototype.handleResponse = function (e) {
   } catch (e) {
     return;
   }
+  
+  logger.log('silly', "Got Server Response: " + JSON.stringify(e));
 
   var message = data.data;
   switch (data.type) {

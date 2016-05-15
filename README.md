@@ -27,10 +27,15 @@ Tip: Change your bot permissions in serverconfig.js to have the same as a co-own
 The first thing you'll need to do is to create a new Bot. You can get these values by typing `config` into the DevTools console on your Pad (if the serverhost is empty, use your domain).
 
 ```javascript
-const mqpAPI = require('mqp-api'); // If you use the browser version, mqpAPI is already available
+const mqpAPI = require('mqp-api'); // Ignore this line if you are using the browser version
 
 var bot = new mqpAPI({
-  autoreconnect: true, // Enabled by default, for other options check the wiki
+  autoreconnect: true,     // Enabled by default, for other options check the wiki
+  logging: {
+    logLevel: 'info',      // Default is info, others are:
+                           // silent, error, warn, info, verbose, debug, silly
+    logFile: './logs.json' // Optional
+  }
 });
 ```
 
@@ -40,7 +45,7 @@ Now we connect to the Websockets Server and login
 bot.connect({
   room: 'tastycat',
 
-  // If you don't know the room slug, you can also connect via port + domain:
+  // If you don't have a room slug, you can also connect via port + domain:
 
   // useSSL: true,
   // socketDomain: 'example.com',
@@ -53,16 +58,12 @@ bot.connect({
     // You can also use a token to login:
     // token: '4f5a2e48-04c5-46e6-bd61-faeeeca69d6d',
   });
-})
-.then(() => {
+}).then(() => {
   console.log('Logged in!');
   // Do what ever you want to happen after you successfully logged in for the first time
   // ...
 })
-// Catch errors
-.catch((e) => {
-  console.log('ERROR: ' + JSON.stringify(e));
-});
+
 bot.on('reconnected', () => {
   // Do what ever you want to happen after you successfully reconnected
 });
@@ -186,7 +187,7 @@ bot.sendJSON({type: 'getUsers'});
 ```
 
 ```javascript
-    events.once('getUsersReceived', (data) => { //You can add Received to every event to get the Server Response
+    events.once('getUsersReceived', (data) => { // You can add 'Received' to every event to get the Server Response
       if (data.error)
         reject(data.error);
       resolve();
@@ -282,6 +283,21 @@ Usage:
 ```javascript
 bot.ban(uid, duration, reason);
 bot.ban(uid);
+```
+
+--------------------------------------------------------------------------------
+
+## .logger
+
+Usage:
+
+```javascript
+bot.log(logLevel, "Text");
+bot.log("silly", "LOL: " + JSON.stringify({
+  error: {
+    foo: "bar",
+  }
+}));
 ```
 
 --------------------------------------------------------------------------------
