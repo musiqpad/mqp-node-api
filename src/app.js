@@ -26,7 +26,7 @@ var app = function (args) {
     logging: {
       logFile: typeof args.logging.logFile !== 'undefined' ? args.logging.logFile : null,
       logLevel: typeof args.logging.logLevel !== 'undefined' ? args.logging.logLevel : 'info',
-    } || null,
+    },
   };
 
   logger.level = settings.logging.logLevel;
