@@ -24,7 +24,7 @@ var app = function (args) {
     token: null,
     room: args.room || null,
     logging: {
-      logFile: args.logging.logFile || null,
+      logFile: typeof args.logging.logFile !== 'undefined' ? args.logging.logFile : null,
       logLevel: typeof args.logging.logLevel !== 'undefined' ? args.logging.logLevel : 'info',
     } || null,
   };
@@ -248,6 +248,33 @@ app.prototype.once = function (type, value) {
   logger.log('silly', "Registered event listener: " + JSON.stringify(type));
   return events.once(type, value);
 };
+
+app.prototype.getQueue = app.prototype.getDJs = function () {
+  return this.queue;
+}
+app.prototype.getDJ = function () {
+  return this.currentdj;
+}
+
+app.prototype.getMedia = function () {
+  return this.media;
+}
+
+app.prototype.getRoles = function () {
+  return this.roles;
+}
+
+app.prototype.getRoleOrder = function () {
+  return this.roleOrder;
+}
+
+app.prototype.getHistoryLimit = function () {
+  return this.historylimit;
+}
+
+app.prototype.getPadDiscription = function () {
+  return this.description;
+}
 
 app.prototype.handleResponse = function (e) {
   var _this = this;

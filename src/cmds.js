@@ -33,7 +33,7 @@ module.exports = {
       });
     });
   },
-
+  
   joinQueue: function () {
     var _this = this;
     this.sendJSON({
@@ -392,4 +392,30 @@ module.exports = {
       });
     });
   },
+  getConversations: function (uid) {
+    var _ this = this;
+    this.sendJSON({
+      type: 'getPrivateConversation',
+      data: {
+          uid: uid
+      }
+    });
+    return new Promise(function (resolve, reject) {
+      _this.once('getPrivateConversationReceived', function (data) {
+        resolve(data);
+      });
+    });
+  },
+  getHistory: function () {
+    var _ this = this;
+    this.sendJSON({
+      type: 'getHistory',
+      data: {},
+    });
+    return new Promise(function (resolve, reject) {
+      _this.once('getHistoryReceived', function (data) {
+        resolve(data);
+      });
+    });
+  }
 };

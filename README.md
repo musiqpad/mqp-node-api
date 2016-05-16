@@ -156,12 +156,13 @@ Returned Object:
 
 --------------------------------------------------------------------------------
 
-## getUser:
+## getUser: (Also for getting playlists)
 
 Example:
 
 ```javascript
 var user = bot.getUser(uid);
+var currentUser = bot.getUser();
 ```
 
 Returned Object:
@@ -173,6 +174,22 @@ Returned Object:
     role: 'owner',
     un: 'Username',
     uid: 'uid'
+    // If you get the current User, you also get
+    activepl: 10,
+    created: 1462378487408,
+    playlists: {
+      3: {
+        id: 3,
+        name: "playlist1",
+        content: {
+          [
+            0: {
+              SongObject
+            },
+          ]
+        }
+      }
+    }
 }
 ```
 
@@ -292,8 +309,8 @@ bot.ban(uid);
 Usage:
 
 ```javascript
-bot.log(logLevel, "Text");
-bot.log("silly", "LOL: " + JSON.stringify({
+bot.logger.log(logLevel, "Text");
+bot.logger.log("silly", "LOL: " + JSON.stringify({
   error: {
     foo: "bar",
   }
@@ -302,46 +319,212 @@ bot.log("silly", "LOL: " + JSON.stringify({
 
 --------------------------------------------------------------------------------
 
-There are also:
+## getConversations()
+
+Usage:
 
 ```javascript
-.setLimit(limit);
-.broadcast(msg);
-.removeDj(uid);
-.swap(uid1, uid2);
-.move(uid, position);
-.vote(voteType);
-.getPadBySlug(slug);
+bot.getConversations().then((data) => {
+  /* Data:
+    conversations: {
+      1: {
+        messages: {
+          0: {
+            from: 1,
+            message: 'Hi',
+            time: "2016-05-15T20:48:35.081Z",
+            unread: false,
+          }
+        }
+      }
+    }
 
-// Don't change these, create new Objects:
-.queue  // Array of users in Queue
-.media // If you can, use the data from advance events instead!
-.currentdj
-.roles
-.roleOrder
-.historylimit
-.description
-.user //also includes Playlists
+  */
+})
 ```
 
-## Available Events:
+--------------------------------------------------------------------------------
+
+## getHistory()
+
+Usage:
+
+```javascript
+bot.history().then((data) => {
+  /* Data:
+    [
+      {
+        //Song Object
+      }
+    ]
+
+  */
+})
+```
+
+--------------------------------------------------------------------------------
+
+## setLimit()
+
+Usage:
+
+```javascript
+bot.setLimit(limit).then(() => {
+})
+```
+
+There are also:
+
+--------------------------------------------------------------------------------
+
+## broadcast()
+
+Usage:
+
+```javascript
+bot.broadcast(msg).then(() => {
+})
+```
+
+--------------------------------------------------------------------------------
+
+## removeDj()
+
+Usage:
+
+```javascript
+bot.removeDj(uid).then(() => {
+})
+```
+
+--------------------------------------------------------------------------------
+
+## swap()
+
+Usage:
+
+```javascript
+bot.swap(uid1, uid2).then(() => {
+})
+```
+
+--------------------------------------------------------------------------------
+
+## swap()
+
+Usage:
+
+```javascript
+bot.move(uid, position).then(() => {
+})
+```
+
+--------------------------------------------------------------------------------
+
+## vote()
+
+Usage:
+
+```javascript
+bot.vote(type).then(() => {
+  //Types: like, dislike, grab
+})
+```
+
+--------------------------------------------------------------------------------
+
+## getPadBySlug()
+
+Usage:
+
+```javascript
+bot.getPadBySlug(slug).then(() => {
+  // You get  socketPort
+  //          socketDomain
+  //          useSSL
+})
+```
+
+--------------------------------------------------------------------------------
+
+## getDJ()
+
+Usage:
+
+```javascript
+dj = bot.getDJ();
+```
+
+--------------------------------------------------------------------------------
+
+## getMedia()
+
+Usage:
+
+```javascript
+media = bot.getMedia();
+```
+
+--------------------------------------------------------------------------------
+
+## getRoles()
+
+Usage:
+
+```javascript
+roles = bot.getRoles();
+```
+
+--------------------------------------------------------------------------------
+
+## getRoleOrder()
+
+Usage:
+
+```javascript
+roleorder = bot.getRoleOrder();
+```
+
+--------------------------------------------------------------------------------
+
+## getHistoryLimit()
+
+Usage:
+
+```javascript
+historylimit = bot.getHistoryLimit();
+```
+
+--------------------------------------------------------------------------------
+
+## getPadDiscription()
+
+Usage:
+
+```javascript
+description = bot.getPadDiscription();
+```
+
+# Available Events:
 
 - rawSocket
 - reconnected
 - error // Gets passed the error object
 - closed
-- chat
+- chat ```
 
 ```
-    {
+{
 
-    time: 'a timestamp',
-    msg: "HEEY",
-    uid: 12,
-    cid: 420,
-    user: { Same as getUser() },
+time: 'a timestamp',
+msg: "HEEY",
+uid: 12,
+cid: 420,
+user: { Same as getUser() },
 
-    }
+}
+```
+
 ```
 
 All of these events get passed the same like the client api:
