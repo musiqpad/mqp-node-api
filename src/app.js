@@ -14,6 +14,11 @@ var _this;
 
 var app = function (args) {
   var _this = this;
+  if(typeof args.logging == "undefined") {
+    args.logging = {
+      logLevel: 'info',
+    }
+  }
   var settings = this.settings = {
     autoreconnect: typeof args.autoreconnect !== 'undefined' ? args.autoreconnect : true,
     useSSL: args.useSSL || null,
@@ -25,7 +30,7 @@ var app = function (args) {
     room: args.room || null,
     logging: {
       logFile: typeof args.logging.logFile !== 'undefined' ? args.logging.logFile : null,
-      logLevel: typeof args.logging.logLevel !== 'undefined' ? args.logging.logLevel : 'info',
+      logLevel: args.logging.logLevel,
     },
   };
 
