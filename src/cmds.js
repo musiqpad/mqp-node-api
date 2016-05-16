@@ -393,7 +393,7 @@ module.exports = {
     });
   },
   getConversations: function (uid) {
-    var _ this = this;
+    var _this = this;
     this.sendJSON({
       type: 'getPrivateConversation',
       data: {
@@ -407,7 +407,7 @@ module.exports = {
     });
   },
   getHistory: function () {
-    var _ this = this;
+    var _this = this;
     this.sendJSON({
       type: 'getHistory',
       data: {},
