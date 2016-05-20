@@ -497,12 +497,12 @@ historylimit = bot.getHistoryLimit();
 
 --------------------------------------------------------------------------------
 
-## getPadDiscription()
+## getPadDescription()
 
 Usage:
 
 ```javascript
-description = bot.getPadDiscription();
+description = bot.getPadDescription();
 ```
 
 # Available Events:
