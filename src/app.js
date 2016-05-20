@@ -13,6 +13,7 @@ const logger = require('./log.js');
 var _this;
 
 var app = function (args) {
+  // TODO: use nconf for settings 
   var _this = this;
   if(typeof args.logging == "undefined") {
     args.logging = {
@@ -277,7 +278,7 @@ app.prototype.getHistoryLimit = function () {
   return this.historylimit;
 }
 
-app.prototype.getPadDiscription = function () {
+app.prototype.getPadDescription = function () {
   return this.description;
 }
 
