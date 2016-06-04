@@ -155,9 +155,9 @@ var app = function (args) {
       events.emit('rawSocket', message.data);
     };
 
-    _this.ws.onerror = function (error) {
+    _this.ws.onerror = function (e) {
       logger.log('error', "Websocket error: " + e);
-      events.emit('error', error);
+      events.emit('error', e);
       if (_this.settings.autoreconnect) {
         _this.reconnecting = 1;
         setTimeout(_this.connectToSocket, 5e3);
