@@ -22,6 +22,8 @@ npm install mqp-api -S
 
 **Version 0.3.x changes how you connect to a pad, the old way still works for compatibility though!**
 
+**Version 0.7.x changed bans to restrictions, check the docs below!**
+
 Tip: Change your bot permissions in serverconfig.js to have the same as a co-owner if you want to avoid permissions errors. If you don't know the `() =>` syntax, google arrow functions!
 
 The first thing you'll need to do is to create a new Bot. You can get these values by typing `config` into the DevTools console on your Pad (if the serverhost is empty, use your domain).
@@ -293,13 +295,14 @@ bot.whois(uid, un)
 
 --------------------------------------------------------------------------------
 
-## unban() / ban():
+## restrictUser(), getUserRestrictions()
 
 Usage:
 
 ```javascript
-bot.ban(uid, duration, reason);
-bot.ban(uid);
+restrictUser(uid, duration, reason, type);
+getUserRestrictions(uid).then((data) => console.log(data));
+unrestrictUser(uid, type);
 ```
 
 --------------------------------------------------------------------------------

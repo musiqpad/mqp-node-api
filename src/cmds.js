@@ -290,7 +290,7 @@ module.exports = {
       });
     });
   },
-
+  /* Removed in 0.7.0
   ban: function (uid, duration, reason) {
     var _this = this;
     this.sendJSON({
@@ -328,7 +328,7 @@ module.exports = {
       });
     });
   },
-
+  */
   whois: function (uid, un) {
     var _this = this;
     this.sendJSON({
@@ -417,5 +417,58 @@ module.exports = {
         resolve(data);
       });
     });
-  }
+  },
+  
+  restrictUser: function (uid, duration, reason, type) {
+    var _this = this;
+    this.sendJSON({
+      type: 'restrictUser',
+      data: {
+        uid: uid,
+        duration: duration,
+        reason: reason,
+        type: type,
+      },
+    });
+    return new Promise(function (resolve, reject) {
+      _this.once('restrictUserReceived', function (data) {
+        if (data.error)
+          reject('restrictUser error: ' + data.error);
+        resolve(data);
+      });
+    });
+  },
+  getUserRestrictions: function (uid) {
+    var _this = this;
+    this.sendJSON({
+      type: 'getUserRestrictions',
+      data: {
+        uid: uid,
+      },
+    });
+    return new Promise(function (resolve, reject) {
+      _this.once('rgetUserRestrictionsReceived', function (data) {
+        if (data.error)
+          reject('getUserRestrictions error: ' + data.error);
+        resolve(data);
+      });
+    });
+  },
+  unrestrictUser: function (uid, type) {
+    var _this = this;
+    this.sendJSON({
+      type: 'unrestrictUser',
+      data: {
+        uid: uid,
+        type: type,
+      },
+    });
+    return new Promise(function (resolve, reject) {
+      _this.once('unrestrictUserReceived', function (data) {
+        if (data.error)
+          reject('unrestrictUser error: ' + data.error);
+        resolve(data);
+      });
+    });
+  },
 };
